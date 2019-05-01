@@ -13,11 +13,7 @@ def get_last_argument(words):
 def parse_who_is(words):
     question_number = None
     arg = None
-    if words[2] == THE_KEY:
-        # can be only ix
-        question_number = 9
-        arg = get_last_argument(words[3:])
-    elif len(words) > 5:
+    if len(words) > 5 and (words[3] == PRIME_KEY or words[3] == PRESIDENT_KEY):
         # can be i, ii
         if words[3] == PRESIDENT_KEY and words[4] == OF_KEY:
             question_number = 1
@@ -25,6 +21,9 @@ def parse_who_is(words):
         elif words[3] == PRIME_KEY and words[4] == MINISTER_KEY and words[5] == OF_KEY:
             question_number = 2
             arg = get_last_argument(words[6:])
+    elif len(words) > 2:
+        question_number = 9
+        arg = get_last_argument(words[2:])
     return question_number, arg
 
 
@@ -35,19 +34,19 @@ def parse_what_is_the(words):
     if words[3] == POPULATION_KEY:
         # iii
         question_number = 3
-        arg = get_last_argument(words[6:])
+        arg = get_last_argument(words[5:])
     elif words[3] == AREA_KEY:
         # iv
         question_number = 4
-        arg = get_last_argument(words[6:])
+        arg = get_last_argument(words[5:])
     elif words[3] == GOVERNMENT_KEY:
         question_number = 5
-        arg = get_last_argument(words[6:])
+        arg = get_last_argument(words[5:])
         # v
     elif words[3] == CAPITAL_KEY:
         # vi
         question_number = 6
-        arg = get_last_argument(words[6:])
+        arg = get_last_argument(words[5:])
     return question_number, arg
 
 
@@ -112,3 +111,6 @@ def start_console(question):
         print('Invalid question, please enter new question.')
     else:
         do_request(question, arg)
+
+
+start_console("what is the capital of america?")
