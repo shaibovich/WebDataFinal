@@ -7,7 +7,7 @@ URL_PREFIX = 'http://example.org/'
 FILE_NAME = "ontology.nt"  # TODO: check how the question now what is the ontology.
 CREATE_ONTOLOGY = "create"
 QUESTION_ONTOLOGY = "question"
-
+COUNTRY_URL = "https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)"
 #######################################################################
 #                        CONSOLE KEY WORDS                            #
 #######################################################################
