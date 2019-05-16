@@ -151,6 +151,7 @@ def start(file_path):
         country_link = country.xpath("./td[2]//a/@href")[0]
         country_name = country.xpath("./td[2]//a/text()")[0].replace(" ","")
         createUriRef(country_name)
+        print("hello")
         print(country_name);
 
         extract_country_data(country_name,prefix+country_link)
