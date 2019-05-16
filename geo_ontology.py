@@ -155,7 +155,7 @@ def start(file_path):
 
         extract_country_data(country_name,prefix+country_link)
 
-   # g.serialize()i
+   # g.serialize()
 
 
 
