@@ -21,6 +21,6 @@ def do_command(arg, param):
 
 
 validate_command_line_args(sys.argv)
-arg = sys.argv[1]
-param = sys.argv[2]
-do_command(arg, param)
+_arg = sys.argv[1]
+_param = sys.argv[2]
+do_command(_arg, _param)

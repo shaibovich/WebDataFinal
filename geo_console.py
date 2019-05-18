@@ -1,9 +1,10 @@
 from const import BORN_KEY, PRESIDENT_KEY, CAPITAL_KEY, PRIME_KEY, MINISTER_KEY, POPULATION_KEY, \
-    GOVERNMENT_KEY, \
-    AREA_KEY, WHO_KEY, IS_KEY, THE_KEY, OF_KEY, WHAT_KEY, WHEN_KEY, WAS_KEY
+    GOVERNMENT_KEY,AREA_KEY, WHO_KEY, IS_KEY, THE_KEY, OF_KEY, WHAT_KEY, WHEN_KEY, WAS_KEY
 
-from geq_queries import capital_of_country_query, area_of_country_query, government_of_country_query, population_of_country_query, \
-    president_of_country_query, prime_minister_of_country_query, prime_minister_born_date_query, president_born_date_query, who_query
+from geq_queries import capital_of_country_query, area_of_country_query, government_of_country_query, \
+    population_of_country_query, \
+    president_of_country_query, prime_minister_of_country_query, prime_minister_born_date_query, \
+    president_born_date_query, who_query
 
 
 def get_last_argument(words):
@@ -58,7 +59,8 @@ def parse_when_was_the(words):
         question_number = 7
         arg = get_last_argument(words[3:len(words) - 1])
         # can be vii
-    elif words[4] == PRIME_KEY and words[5] == MINISTER_KEY and words[6] == OF_KEY and words[len(words) - 1] == BORN_KEY:
+    elif words[4] == PRIME_KEY and words[5] == MINISTER_KEY and words[6] == OF_KEY and words[
+        len(words) - 1] == BORN_KEY:
         question_number = 8
         arg = get_last_argument(words[4:len(words) - 1])
     return question_number, arg
@@ -101,8 +103,6 @@ def do_request(question, arg):
         print(who_query(arg))
     else:
         print("ERROR")
-
-
 
 
 def start_console(question):
