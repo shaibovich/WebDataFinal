@@ -55,21 +55,20 @@ def parse_when_was_the(words):
     question_number = None
     arg = None
     # can be vii, viii
-    if words[4] == PRESIDENT_KEY and words[5] == OF_KEY and words[len(words) - 1] == BORN_KEY:
+    if words[3] == PRESIDENT_KEY and words[4] == OF_KEY and words[len(words) - 1] == BORN_KEY:
         question_number = 7
-        arg = get_last_argument(words[3:len(words) - 1])
+        arg = get_last_argument(words[5:len(words) - 1])
         # can be vii
-    elif words[4] == PRIME_KEY and words[5] == MINISTER_KEY and words[6] == OF_KEY and words[
-        len(words) - 1] == BORN_KEY:
+    elif words[3] == PRIME_KEY and words[4] == MINISTER_KEY and words[5] == OF_KEY and words[len(words) - 1] == BORN_KEY:
         question_number = 8
-        arg = get_last_argument(words[4:len(words) - 1])
+        arg = get_last_argument(words[6:len(words) - 1])
     return question_number, arg
 
 
 def parse_user_question(string):
     question_number = None
     arg = None
-    words = string.split(" ")
+    words = string.lower().split(" ")
     if len(words) == 0 or len(words) < 3 or words[len(words) - 1][-1] != '?':
         return question_number, arg
     if words[0] == WHO_KEY and words[1] == IS_KEY:
@@ -77,12 +76,13 @@ def parse_user_question(string):
         question_number, arg = parse_who_is(words)
     elif len(words) > 5 and words[0] == WHAT_KEY and words[1] == IS_KEY and words[2] == THE_KEY and words[4] == OF_KEY:
         question_number, arg = parse_what_is_the(words)
-    elif len(words) > 6 and words[0] == WHEN_KEY and words[1] == WAS_KEY and words[3] == THE_KEY:
+    elif len(words) > 6 and words[0] == WHEN_KEY and words[1] == WAS_KEY and words[2] == THE_KEY:
         question_number, arg = parse_when_was_the(words)
     return question_number, arg
 
 
 def do_request(question, arg):
+    ans = None
     if question == 1:
         print(president_of_country_query(arg))
     elif question == 2:
@@ -112,5 +112,3 @@ def start_console(question):
     else:
         do_request(question, arg)
 
-
-start_console("what is the capital of america?")
