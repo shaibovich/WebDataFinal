@@ -50,10 +50,7 @@ def get_date_string(date_string):
 
 # Returns President Name and Born date if exists as a tuple (President name, Born date)
 def get_president(g, country_name, table):
-    # president name
-    # president = table.xpath("./tbody/tr[th/div/a[text() = 'President']]/td//a/text()")
     president_element = table.xpath("./tbody/tr[th/div/a[text() = 'President']]")
-    # president = table.xpath(".//th//a[text() = 'President' and contains(@title, 'President')]")
     # if len(president_element) == 0:
     #     print("\t\tpresident for county [{}] not exists, skip".format(country_name))
     if len(president_element) > 0:

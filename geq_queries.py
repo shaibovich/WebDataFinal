@@ -114,10 +114,37 @@ def prime_minister_born_date_query(arg):
 
 
 def who_query(arg):
-    return arg
+    g = rdflib.Graph()
+    g.parse(FILE_NAME, format="nt")
+    arg = arg.replace(' ', '_').lower()
+    president = check_if_president(g, arg)
+    prime = check_if_prime_minister(g, arg)
+    if prime is False and president is False:
+        return "None"
+    elif prime is not False:
+        return "Prime minister of {}".format(prime)
+    else:
+        return "President of {}".format(president)
 
 
 
+def check_if_prime_minister(g, person):
+    ans = list(g.query("select ?country  {" + \
+                       " ?prime <http://example.org/primeMinisterOf> ?country ." + \
+                        "FILTER (regex(lcase(str(?prime)), '{}') && strlen(str(?prime)) != strlen('{}'))".format(person, person) + \
+                       " } "))
+    if len(ans) == 0:
+        return False
+    return convert_to_list(ans,"country")
+
+def check_if_president(g, person):
+    ans = list(g.query("select ?country  {" + \
+                       " ?president <http://example.org/presidentOf> ?country ." + \
+                        "FILTER (regex(lcase(str(?president)), '{}') && strlen(str(?president)) = strlen('{}'))".format(person, person) + \
+                       " } "))
+    if len(ans) == 0:
+        return False
+    return convert_to_list(ans,"country")
 
 
 #####################################################
@@ -171,3 +198,4 @@ def number_of_monarchy_countries():
     print('Number of monarchy countries : {}'.format(ans))
 
 # president_of_country_query("israel")
+who_query("Donald Trump")
