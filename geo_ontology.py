@@ -23,6 +23,12 @@ def get_capital(table):
         "./tbody/tr/th[text() = 'Capital']/../td/a/text() | ./tbody/tr/th[text() = 'Capital']/../td/div/ul/li/a/text()")
     return capital
 
+def get_country_name(table):
+    name = table.xpath('//h1[contains(@id,"firstHeading")]/text()')[0].strip()
+    if '(' in name:
+        name = name.split('(')[0].strip()
+    return name
+
 
 def get_date_string(date_string):
     day, month, year = None, None, None
@@ -51,111 +57,74 @@ def get_date_string(date_string):
 # Returns President Name and Born date if exists as a tuple (President name, Born date)
 def get_president(g, country_name, table):
     president_element = table.xpath("./tbody/tr[th/div/a[text() = 'President']]")
-    # if len(president_element) == 0:
-    #     print("\t\tpresident for county [{}] not exists, skip".format(country_name))
     if len(president_element) > 0:
-        # getting president bith place
-        # president Born date
-        # president_born_date_page = prefix + table.xpath("./tbody/tr//td[text() = 'President']/a/@href")[0]
-        # print(president_born_date_page)
         presidnet = president_element[0].xpath("./td//a[contains(@href,'wiki')]")
         if len(presidnet) == 0:
             president_name = president_element[0].xpath("./td//a/text()")[0].strip()
         else:
-            president_name = presidnet[0].xpath("./text()")[0].strip()
             presidnet_url = presidnet[0].xpath("./@href")[0]
-            get_president_data(g, president_name, presidnet_url, True)
+            president_name = get_president_data(g, presidnet_url)
 
-        # print('\t\tAdding relation president [{}] presidentOf [{}]'.format(president_name, country_name))
         add_relation_to_graph(g, president_name, PRESIDENT, country_name)
 
 
-def get_president_data(g, president_name, president_url, is_president):
-    # if is_president:
-    #     print("\t\tcollection president [{}] data with url [{}]".format(president_name, president_url))
-    # else:
-    #     print("\t\tcollection prime_minister [{}] data with url [{}]".format(president_name, president_url))
+def get_president_data(g, president_url):
     res = requests.get(prefix + president_url)
     doc = lxml.html.fromstring(res.text)
+    president_name = get_country_name(doc)
     table = doc.xpath("//table[contains(@class, 'infobox')]")[0]
     born = table.xpath(".//tbody/tr[th[text() = 'Born']]")
-    # if len(born) == 0:
-    #     if is_president:
-    #         print("\t\t\tno president [{}] born data".format(president_name))
-    #     else:
-    #         print("\t\t\tno prime minister [{}] born data".format(president_name))
-    # else:
     if len(born) > 0:
         born_element = born[0]
         born_date = born_element.xpath('./td/text()')[0]
         born_date = get_date_string(born_date)
-        if born_date is None:
-            print('\t\t\tNo born date for [{}]'.format(president_name))
-        else:
+        if born_date is not None:
             dob = Literal(born_date, datatype=XSD.date)
-            # print('before dob [{}] and after[{}]'.format(born_date,dob))
-            if is_president:
-                # print('\t\t\tAdding relation president [{}] born date [{}]'.format(president_name, dob))
-                add_relation_to_graph(g, president_name, BIRTH_DATE, dob)
-            else:
-                # print('\t\t\tAdding relation prime_minister [{}] born date [{}]'.format(president_name, dob))
-                add_relation_to_graph(g, president_name, BIRTH_DATE, dob)
+            add_relation_to_graph(g, president_name, BIRTH_DATE, dob)
+    return president_name
 
 
 # Returns prime_minister Name and Born date if exists as a tuple (prime_minister name, Born date)
 def get_prime_minister(g, country_name, table):
     prime_minister_element = table.xpath("./tbody/tr[th/div/a[text() = 'Prime Minister']]")
-    # president = table.xpath(".//th//a[text() = 'President' and contains(@title, 'President')]")
-    # if len(prime_minister_element) == 0:
-    #     print("\t\tprime minister for county [{}] not exists, skip".format(country_name))
-    # else:
     if len(prime_minister_element) > 0:
         prime_minister = prime_minister_element[0].xpath("./td//a[contains(@href,'wiki')]")
         if len(prime_minister) == 1:
-            prime_minister_name = prime_minister[0].xpath("./text()")[0].strip()
             prime_minister_url = prime_minister[0].xpath("./@href")[0]
-            get_president_data(g, prime_minister_name, prime_minister_url, False)
+            prime_minister_name = get_president_data(g, prime_minister_url)
         else:
             prime_minister_name = prime_minister_element[0].xpath("./td//text()")[0].strip()
 
         add_relation_to_graph(g, prime_minister_name, PRIME_MINISTER, country_name)
-        # print('\t\tAdding relation primeMinister [{}] primeMinisterOf [{}]'.format(prime_ministert_name, country_name))
 
 
 
 # Returns country Pupulation
 def get_population(g, country_name, table):
-    # print('\t\tCollection county [{}] population'.format(country_name))
-    # population = table.xpath("//tr/th[/a[contains(text(),'Population')]]")
     population = table.xpath("./tbody/tr[th/a[contains(text(), 'Population')]]/following-sibling::tr[1]/td/text()[1]")
     if len(population) == 0:
         population = table.xpath(".//tr[th[contains(text(), 'Population')]]/following-sibling::tr[1]/td/text()[1]")
     if len(population) == 0:
-        # print('\t\tNo country population {}, skip'.format(country_name))
         return
     else:
-
         population_number = population[0].strip()
         if '(' in population_number:
             population_number = population_number.split('(')[0].strip()
-        # print('\t\tAdding relation country [{}] population [{}]'.format(country_name, population_number))
         add_relation_to_graph(g, country_name, POPULATION, population_number)
 
 
 # Returns country Area
 def get_area(g, country_name, table):
-    # print('\t\tCollection county [{}] area'.format(country_name))
     area = table.xpath("./tbody/tr[th/a[contains(text(), 'Area')]]/following-sibling::tr[1]/td/text()[1]")
     if len(area) == 0:
         area = table.xpath("./tbody/tr[th[contains(text(), 'Area')]]/following-sibling::tr[1]/td/text()[1]")
     if len(area) == 0:
-        # print('\t\tNo country area {}, skip'.format(country_name))
         return
     else:
         if len(area[0].split('(')) == 1:
             area_final_size = area[0]
             if 'km' not in area_final_size:
-                area_final_size += ' km'
+                area_final_size += '_km'
         else:
             area_list = area[0].split('(')
             area_final_size = 0
@@ -163,24 +132,18 @@ def get_area(g, country_name, table):
                 if area_size.count('km') > 0:
                     area_final_size = area_size
         area_final_size += '2'
-        # print('\t\tAdding relation country [{}] area [{}]'.format(country_name, area_final_size))
         add_relation_to_graph(g, country_name, AREA, area_final_size)
 
 
 # Returns country goverment - FOR NOW RETURNNING ALL THE WORDS AS A STRING WITH SPACES< TO CHECK WHAT SHOULD WE DO WITH THAT
 def get_government(g, country_name, table):
-    # print('\t\tCollection county [{}] government'.format(country_name))
-    # government = table.xpath("./tbody/tr[th/a[contains(text(), 'Government')] || th[@contains(text(). Government)]")
     government = table.xpath("./tbody/tr[th/a[contains(text(), 'Government')]]")
     if len(government) == 0:
         government = table.xpath("./tbody/tr[th[contains(text(), 'Government')]]")
     if len(government) > 0:
-        government_name = (" ").join(government[0].xpath('.//td//text()'))
-        # government_name = (" ").join(government)
-        # print('\t\tAdding relation country [{}] government [{}]'.format(country_name, government_name))
+        government_name = "_".join(government[0].xpath('.//td/a/text()'))
+
         add_relation_to_graph(g, country_name, GOVERNMENT, government_name)
-    # else:
-    #     print('\t\tNo country government {}, skip'.format(country_name))
 
 
 def extract_country_data(g, country_name, country_link):
@@ -189,7 +152,6 @@ def extract_country_data(g, country_name, country_link):
     table = doc.xpath("//table[contains(@class, 'infobox')]")[0]
     capital = get_capital(table)
     for cap in capital:
-        # print("\t Adding capital [{}] for countryName [{}]".format(cap, country_name))
         add_relation_to_graph(g, cap, CAPITAL, country_name)
     get_president(g, country_name, table)
     get_prime_minister(g, country_name, table)
@@ -201,7 +163,6 @@ def extract_country_data(g, country_name, country_link):
 def start(file_path):
     time = datetime.datetime.now()
     g = rdflib.Graph()
-    # print("START INIT ONTOLOGY , WILL SAVE AT {}".format(file_path))
     res = requests.get(COUNTRY_URL)
     doc = lxml.html.fromstring(res.text)
     country_table = doc.xpath("//table[contains(@class, 'wikitable')]")[0]
@@ -217,4 +178,4 @@ def start(file_path):
     print("Finish after [{}] ".format(finish_time - time))
 
 
-# start("")
+start("")#
