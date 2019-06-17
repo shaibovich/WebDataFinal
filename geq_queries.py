@@ -26,8 +26,6 @@ def president_of_country_query(arg):
                        " ?president <http://example.org/presidentOf> <http://example.org/{}> ".format(arg) + \
                        " } "))
     g.close()
-
-    # TODO: fix
     return convert_to_list(ans, 'president').title()
 
 
@@ -122,12 +120,12 @@ def who_query(arg):
         output = "Prime minister of "
         if len(prime) == 1:
             return output + prime[0].title()
-        return output + ", ".join(prime)[:-1].title()
+        return output + ", ".join(prime).title()
     else:
         output = "President of "
         if len(president) == 1:
             return output + president[0].title()
-        return output + ", ".join(president)[:-1].title()
+        return output + ", ".join(president).title()
 
 
 
@@ -168,7 +166,7 @@ def number_of_countires():
     g = rdflib.Graph()
     g.parse(FILE_NAME, format="nt")
     ans = list(g.query("select (count(distinct ?country) as ?total) {" + \
-                       " ?president <http://example.org/presidentOf> ?country " + \
+                       " ?country <http://example.org/population> ?p " + \
                        " } "))[0]
     g.close()
     ans = ans.asdict().get('total').capitalize()
@@ -198,4 +196,6 @@ def number_of_monarchy_countries():
     ans = ans.asdict().get('total').capitalize()
     print('Number of monarchy countries : {}'.format(ans))
 
+
+a = "Central African Republic"
 

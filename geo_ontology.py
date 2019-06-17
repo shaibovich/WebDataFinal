@@ -170,7 +170,6 @@ def start(file_path):
     for country in countries:
         country_link = country.xpath("./td[2]//a/@href")[0]
         country_name = country.xpath("./td[2]//a/text()")[0].strip()
-        # print("country [{}] with country href [{}]".format(country_name, country_link))
         extract_country_data(g, country_name, prefix + country_link)
 
     g.serialize(FILE_NAME, format='nt')
@@ -178,4 +177,3 @@ def start(file_path):
     print("Finish after [{}] ".format(finish_time - time))
 
 
-start("")#
