@@ -128,14 +128,14 @@ def who_query(arg):
         return output + ", ".join(president).title()
 
 
-
 def check_if_prime_minister(g, person):
     ans = list(g.query("select ?country  {" + \
                        " <http://example.org/{}> <http://example.org/primeMinisterOf> ?country .".format(person) + \
                        " } "))
     if len(ans) == 0:
         return False
-    return convert_to_list(ans,"country",True)
+    return convert_to_list(ans, "country", True)
+
 
 def check_if_president(g, person):
     ans = list(g.query("select ?country  {" + \
@@ -143,7 +143,7 @@ def check_if_president(g, person):
                        " } "))
     if len(ans) == 0:
         return False
-    return convert_to_list(ans,"country",True)
+    return convert_to_list(ans, "country", True)
 
 
 #####################################################
@@ -195,7 +195,3 @@ def number_of_monarchy_countries():
     g.close()
     ans = ans.asdict().get('total').capitalize()
     print('Number of monarchy countries : {}'.format(ans))
-
-
-a = "Central African Republic"
-
